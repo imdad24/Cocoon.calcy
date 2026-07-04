@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cocoon Calc">
+<title>Cocoon Calc</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  min-height:100%;
+  background:#080a10;
+  color:#e8eaf2;
+  font-family:'Inter',sans-serif;
+  padding-bottom:60px;
+}
+
+/* ── HEADER ── */
+.header{
+  padding:56px 24px 24px;
+  background:linear-gradient(180deg,#0f1220 0%,#080a10 100%);
+  text-align:center;
+  position:relative;
+}
+.header::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:50%;transform:translateX(-50%);
+  width:60%;height:1px;
+  background:linear-gradient(90deg,transparent,#f0c06040,transparent);
+}
+.logo{
+  width:64px;height:64px;border-radius:20px;
+  background:linear-gradient(135deg,#f0c060,#c89a3a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+  box-shadow:0 8px 32px rgba(240,192,96,0.25);
+}
+.header h1{font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:-0.03em}
+.header p{font-size:0.75rem;color:#5a6180;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase}
+
+/* ── MAIN ── */
+.main{max-width:480px;margin:0 auto;padding:28px 20px 0}
+
+/* ── SECTION LABEL ── */
+.sec{
+  font-size:0.6rem;font-weight:700;
+  color:#f0c060;letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:10px;padding-left:2px;
+}
+
+/* ── CARD ── */
+.card{
+  background:linear-gradient(145deg,#12151f,#0e1018);
+  border:1px solid #1e2235;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* ── INPUTS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.field{}
+.field label{
+  display:block;font-size:0.62rem;font-weight:600;
+  color:#3d4460;letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.field label em{color:#f0c060;font-style:normal}
+.field input{
+  width:100%;
+  background:#080a10;
+  border:1.5px solid #1e2235;
+  border-radius:12px;
+  padding:13px 14px;
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-size:1.05rem;
+  font-weight:600;
+  outline:none;
+  -webkit-appearance:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.field input::placeholder{color:#2a2f45;font-weight:400}
+.field input:focus{
+  border-color:#f0c060;
+  box-shadow:0 0 0 3px rgba(240,192,96,0.1);
+}
+.field .note{font-size:0.58rem;color:#2a2f45;margin-top:5px;padding-left:2px}
+
+/* ── BUTTON ── */
+.btn{
+  width:100%;padding:16px;
+  background:linear-gradient(135deg,#f0c060 0%,#d4a030 50%,#c89a3a 100%);
+  border:none;border-radius:14px;
+  color:#080a10;font-family:'Inter',sans-serif;
+  font-size:1rem;font-weight:800;
+  cursor:pointer;letter-spacing:0.01em;
+  box-shadow:0 4px 20px rgba(240,192,96,0.3);
+  transition:transform 0.1s,box-shadow 0.2s;
+}
+.btn:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(240,192,96,0.2)}
+
+/* ── ERROR ── */
+.err{
+  background:rgba(255,80,80,0.07);
+  border:1px solid rgba(255,80,80,0.2);
+  border-radius:12px;padding:13px 16px;
+  color:#ff6b6b;font-size:0.8rem;
+  margin-top:16px;display:none;line-height:1.5;
+}
+.err.on{display:block}
+
+/* ── RESULT ── */
+.result{
+  background:linear-gradient(145deg,#12151f,#0e1018);
+  border:1px solid #1e2235;
+  border-radius:20px;margin-top:20px;
+  overflow:hidden;display:none;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+.result.on{display:block}
+
+/* Constant pills */
+.pills{
+  display:flex;gap:6px;padding:14px 18px;
+  background:#0c0e18;border-bottom:1px solid #1e2235;
+  flex-wrap:wrap;
+}
+.pill{
+  padding:5px 12px;border-radius:20px;
+  border:1px solid #1e2235;
+  font-size:0.62rem;font-weight:600;
+  color:#3d4460;background:transparent;
+  transition:all 0.2s;
+}
+.pill.on{
+  border-color:#f0c060;color:#f0c060;
+  background:rgba(240,192,96,0.08);
+}
+
+/* Output grid */
+.ogrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#1e2235}
+.ocell{background:#12151f;padding:16px 18px}
+.ocell .ol{font-size:0.58rem;font-weight:600;color:#3d4460;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px}
+.ocell .ov{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em}
+.ocell .os{font-size:0.58rem;color:#2a2f45;margin-top:3px}
+.cg{color:#f0c060}.cb{color:#70b0f8}.cs{color:#e8eaf2}
+
+/* Net bar */
+.nbar{
+  padding:11px 18px;
+  background:#0c0e18;border-top:1px solid #1e2235;
+  font-size:0.68rem;color:#3d4460;line-height:1.5;
+}
+
+/* Big price */
+.bigwrap{
+  padding:22px 20px;
+  border-top:1px solid #1e2235;
+  background:linear-gradient(135deg,rgba(82,208,128,0.05) 0%,transparent 100%);
+}
+.biglabel{
+  font-size:0.6rem;font-weight:700;
+  color:#3d4460;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;
+}
+.bigprice{
+  font-size:2.4rem;font-weight:800;
+  color:#52d080;letter-spacing:-0.04em;
+  line-height:1;
+}
+.bigunit{font-size:0.72rem;color:#3d4460;margin-top:4px}
+.bigfm{
+  margin-top:12px;padding-top:12px;
+  border-top:1px solid #1e2235;
+  font-size:0.65rem;color:#3d4460;line-height:1.8;
+}
+.bigfm span{color:#70b0f8;font-weight:600}
+
+/* History */
+.hdivider{height:1px;background:linear-gradient(90deg,transparent,#1e2235,transparent);margin:8px 0 20px}
+.hitem{
+  background:linear-gradient(145deg,#12151f,#0e1018);
+  border:1px solid #1e2235;border-radius:14px;
+  padding:13px 16px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;transition:border-color 0.2s;
+}
+.hitem:active{border-color:#f0c060}
+.hinfo{font-size:0.65rem;color:#3d4460;line-height:1.7}
+.hinfo strong{color:#5a6180;font-weight:500}
+.hprice{font-size:1rem;font-weight:700;color:#52d080;white-space:nowrap;margin-left:12px}
+.hdel{
+  font-size:0.6rem;color:#ff6b6b;
+  padding:4px 9px;border:1px solid rgba(255,107,107,0.2);
+  border-radius:7px;margin-left:8px;cursor:pointer;white-space:nowrap;
+}
+.nohi{text-align:center;padding:24px;color:#2a2f45;font-size:0.78rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🪲</div>
+  <h1>Cocoon Calculator</h1>
+  <p>Shell Ratio · Reindata · Purchase Price</p>
+</div>
+
+<div class="main">
+
+  <div class="sec">Cocoon Measurements</div>
+  <div class="card">
+    <div class="g2">
+      <div class="field">
+        <label><em>A</em> &nbsp;Cocoon Wt of 20</label>
+        <input type="number" id="cw" placeholder="30.0" inputmode="decimal" step="0.01">
+        <div class="note">Total weight of 20 cocoons (g)</div>
+      </div>
+      <div class="field">
+        <label><em>B</em> &nbsp;Shell Wt of 20</label>
+        <input type="number" id="sw" placeholder="4.8" inputmode="decimal" step="0.01">
+        <div class="note">Shell weight of 20 cocoons (g)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">Pricing Parameters</div>
+  <div class="card">
+    <div class="g3">
+      <div class="field">
+        <label><em>SP</em> Selling Price</label>
+        <input type="number" id="sp" placeholder="5800" inputmode="decimal">
+        <div class="note">₹ per kg</div>
+      </div>
+      <div class="field">
+        <label><em>CoP</em> Cost of Prod.</label>
+        <input type="number" id="cp" placeholder="600" inputmode="decimal">
+        <div class="note">₹ per kg</div>
+      </div>
+      <div class="field">
+        <label><em>P</em> Profit</label>
+        <input type="number" id="pf" placeholder="500" inputmode="decimal">
+        <div class="note">₹ per kg</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" onclick="calc()">⚡&nbsp; Calculate Purchase Price</button>
+
+  <div class="err" id="err"></div>
+
+  <div class="result" id="res">
+    <div class="pills">
+      <div class="pill" id="p165">≤ 16% → 165</div>
+      <div class="pill" id="p150">16.1 – 18% → 150</div>
+      <div class="pill" id="p133">&gt; 18% → 133</div>
+    </div>
+    <div class="ogrid">
+      <div class="ocell">
+        <div class="ol">Shell Ratio</div>
+        <div class="ov cg" id="o-sr">—</div>
+        <div class="os">B ÷ A × 100</div>
+      </div>
+      <div class="ocell">
+        <div class="ol">Reindata Constant</div>
+        <div class="ov cb" id="o-c">—</div>
+        <div class="os" id="o-cr">—</div>
+      </div>
+      <div class="ocell">
+        <div class="ol">Reindata (kg)</div>
+        <div class="ov cs" id="o-rd">—</div>
+        <div class="os">Constant ÷ Shell Ratio</div>
+      </div>
+      <div class="ocell">
+        <div class="ol">Net Amount</div>
+        <div class="ov cb" id="o-net">—</div>
+        <div class="os">SP − CoP − Profit</div>
+      </div>
+    </div>
+    <div class="nbar" id="o-nf"></div>
+    <div class="bigwrap">
+      <div class="biglabel">Purchase Price of Cocoons</div>
+      <div class="bigprice" id="o-pp">—</div>
+      <div class="bigunit">per kg of cocoon</div>
+      <div class="bigfm" id="o-fm"></div>
+    </div>
+  </div>
+
+  <div class="hdivider"></div>
+  <div class="sec">Calculation History</div>
+  <div class="nohi" id="nohi">No calculations yet</div>
+  <div id="hl"></div>
+
+</div>
+
+<script>
+var H=[];
+try{H=JSON.parse(localStorage.getItem('cch')||'[]')}catch(e){}
+
+function gc(sr){
+  if(sr>=14&&sr<=16) return{v:165,r:'14% – 16.0%',k:'165'};
+  if(sr>16&&sr<=18)  return{v:150,r:'16.1% – 18.0%',k:'150'};
+  if(sr>18)          return{v:133,r:'18.1% and above',k:'133'};
+  return null;
+}
+
+function rnd(v,d){return Math.round(v*Math.pow(10,d))/Math.pow(10,d)}
+
+function calc(){
+  var cw=parseFloat(document.getElementById('cw').value);
+  var sw=parseFloat(document.getElementById('sw').value);
+  var sp=parseFloat(document.getElementById('sp').value);
+  var cp=parseFloat(document.getElementById('cp').value);
+  var pf=parseFloat(document.getElementById('pf').value);
+
+  document.getElementById('err').className='err';
+
+  if(isNaN(cw)||cw<=0) return se('Please enter Cocoon Weight of 20 cocoons');
+  if(isNaN(sw)||sw<=0) return se('Please enter Shell Weight of 20 cocoons');
+  if(sw>=cw)           return se('Shell Weight must be less than Cocoon Weight');
+  if(isNaN(sp)||isNaN(cp)||isNaN(pf)) return se('Please enter Selling Price, Cost of Production and Profit');
+
+  var sr  = rnd((sw/cw)*100, 3);
+  var co  = gc(sr);
+  if(!co) return se('Shell Ratio is below 14% — no valid Reindata constant');
+
+  var rd  = rnd(co.v/sr, 4);
+  var net = sp-cp-pf;
+  var pp  = rnd(net/rd, 2);
+
+  document.getElementById('o-sr').textContent  = sr.toFixed(3)+'%';
+  document.getElementById('o-c').textContent   = co.v;
+  document.getElementById('o-cr').textContent  = co.r;
+  document.getElementById('o-rd').textContent  = rd.toFixed(4)+' kg';
+  document.getElementById('o-net').textContent = '₹'+net;
+  document.getElementById('o-nf').textContent  = 'Net  =  ₹'+sp+'  −  ₹'+cp+'  −  ₹'+pf+'  =  ₹'+net;
+  document.getElementById('o-pp').textContent  = '₹ '+pp.toFixed(2);
+  document.getElementById('o-fm').innerHTML    =
+    'Net ÷ Reindata(kg)<br>= <span>₹'+net+'</span> ÷ <span>'+rd.toFixed(4)+'</span> = <span>₹'+pp.toFixed(2)+'</span>';
+
+  ['p165','p150','p133'].forEach(function(id){document.getElementById(id).className='pill'});
+  document.getElementById('p'+co.v).className='pill on';
+  document.getElementById('res').className='result on';
+
+  var en={id:Date.now(),cw:cw,sw:sw,sr:sr,c:co.v,rd:rd,sp:sp,cp:cp,pf:pf,net:net,pp:pp,t:new Date().toLocaleTimeString()};
+  H.unshift(en); if(H.length>20)H.pop();
+  try{localStorage.setItem('cch',JSON.stringify(H))}catch(e){}
+  rh();
+}
+
+function se(m){
+  var e=document.getElementById('err');
+  e.textContent='⚠  '+m;
+  e.className='err on';
+  document.getElementById('res').className='result';
+}
+
+function rh(){
+  var l=document.getElementById('hl');
+  var n=document.getElementById('nohi');
+  if(!H.length){n.style.display='block';l.innerHTML='';return}
+  n.style.display='none';
+  l.innerHTML=H.map(function(h){
+    return '<div class="hitem" onclick="lh('+h.id+')">'+
+      '<div>'+
+        '<div class="hinfo"><strong>CW:</strong>'+h.cw+'g &nbsp;<strong>SW:</strong>'+h.sw+'g &nbsp;<strong>SR:</strong>'+h.sr+'% &nbsp;<strong>C:</strong>'+h.c+'</div>'+
+        '<div class="hinfo"><strong>SP:</strong>₹'+h.sp+' &nbsp;<strong>CoP:</strong>₹'+h.cp+' &nbsp;<strong>P:</strong>₹'+h.pf+' &nbsp;'+h.t+'</div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center">'+
+        '<div class="hprice">₹'+h.pp.toFixed(2)+'</div>'+
+        '<div class="hdel" onclick="event.stopPropagation();dh('+h.id+')">✕</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function lh(id){
+  var h=H.find(function(x){return x.id===id});
+  if(!h)return;
+  document.getElementById('cw').value=h.cw;
+  document.getElementById('sw').value=h.sw;
+  document.getElementById('sp').value=h.sp;
+  document.getElementById('cp').value=h.cp;
+  document.getElementById('pf').value=h.pf;
+  calc();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function dh(id){
+  H=H.filter(function(x){return x.id!==id});
+  try{localStorage.setItem('cch',JSON.stringify(H))}catch(e){}
+  rh();
+}
+
+document.getElementById('sp').value='5800';
+document.getElementById('cp').value='600';
+document.getElementById('pf').value='500';
+rh();
+</script>
+</body>
+</html>
